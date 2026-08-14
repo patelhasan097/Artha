@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0">
+  <meta name="theme-color" content="#05070d">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Artha">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="description" content="Real-time NSE/BSE portfolio tracker with Peter Lynch valuation, live watchlist and news inbox">
+  <title>Artha — Smart Portfolio Tracker</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
+  <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div id="app">
+
+<!-- ═══════════════ SPLASH ═══════════════ -->
+<div class="screen" id="splash">
+  <div class="splash-bg"></div>
+  <div class="splash-content">
+    <div class="splash-logo-wrap">
+      <img class="splash-logo" src="assets/logo.svg" alt="Artha">
+      <div class="splash-wordmark">
+        <span class="splash-app-name">Artha</span>
+        <span class="splash-tagline">Invest with clarity</span>
+      </div>
+    </div>
+    <div class="splash-loader"><div class="splash-loader-bar"></div></div>
+  </div>
+</div>
+
+<!-- ═══════════════ AUTH ═══════════════ -->
+<div class="screen" id="auth" style="display:none">
+  <div class="auth-glow"></div>
+  <div class="auth-card">
+    <div class="auth-logo-wrap">
+      <img class="auth-logo" src="assets/logo.svg" alt="Artha">
+      <span class="auth-app-name">Artha</span>
+    </div>
+    <p class="auth-subtitle" id="auth-subtitle">Sign in to track your portfolio</p>
+
+    <button class="btn-google" id="btn-google">
+      <svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+      Continue with Google
+    </button>
+
+    <div class="auth-divider"><span>or</span></div>
+
+    <div id="auth-form-login">
+      <div class="form-group">
+        <input class="form-input" type="email" id="auth-email" placeholder="Email address" autocomplete="email">
+      </div>
+      <div class="form-group">
+        <input class="form-input" type="password" id="auth-password" placeholder="Password" autocomplete="current-password">
+      </div>
+      <button class="btn-primary" id="btn-email-action">Sign in</button>
+      <div class="auth-error" id="auth-error"></div>
+      <div class="auth-switch">
+        <span id="auth-switch-text">Don't have an account?</span>
+        <button id="btn-auth-switch">Sign up</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ ONBOARDING ═══════════════ -->
+<div class="screen" id="onboarding" style="display:none">
+  <div class="onboard-wrap">
+    <div style="width:100%;overflow:hidden;">
+      <div class="onboard-slides" id="onboard-slides">
+        <div class="onboard-slide">
+          <div class="onboard-icon-wrap"><i class="ti ti-chart-candle"></i></div>
+          <h2 class="onboard-title">Live portfolio, real numbers</h2>
+          <p class="onboard-desc">Add your NSE and BSE holdings. Prices, P&amp;L and returns update automatically while the market moves.</p>
+        </div>
+        <div class="onboard-slide">
+          <div class="onboard-icon-wrap"><i class="ti ti-scale"></i></div>
+          <h2 class="onboard-title">Know if a stock is cheap</h2>
+          <p class="onboard-desc">Every holding gets an automatic Peter Lynch valuation — overvalued, fairly valued, or undervalued, worked out for you.</p>
+        </div>
+        <div class="onboard-slide">
+          <div class="onboard-icon-wrap"><i class="ti ti-bell-ringing"></i></div>
+          <h2 class="onboard-title">Never miss an update</h2>
+          <p class="onboard-desc">Quarterly results, board meetings and news for your stocks land in one clean inbox — no noise, just what matters.</p>
+        </div>
+      </div>
+    </div>
+    <div class="onboard-dots" id="onboard-dots">
+      <div class="onboard-dot active"></div><div class="onboard-dot"></div><div class="onboard-dot"></div>
+    </div>
+    <button class="btn-onboard-next" id="btn-onboard-next">Next</button>
+    <button class="pin-forgot" id="btn-onboard-skip">Skip intro</button>
+  </div>
+</div>
+
+<!-- ═══════════════ PIN SETUP ═══════════════ -->
+<div class="screen" id="pin-setup" style="display:none">
+  <div class="pin-screen-content">
+    <img class="pin-logo" src="assets/logo.svg" alt="">
+    <h2 class="pin-title" id="setup-title">Create your PIN</h2>
+    <p class="pin-subtitle" id="setup-subtitle">Choose 6 digits — this locks the app every time you open it.</p>
+    <div class="pin-dots" id="setup-dots">
+      <div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div>
+      <div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div>
+    </div>
+    <div class="pin-pad" id="setup-pad">
+      <button class="pin-btn" data-n="1">1</button><button class="pin-btn" data-n="2">2</button><button class="pin-btn" data-n="3">3</button>
+      <button class="pin-btn" data-n="4">4</button><button class="pin-btn" data-n="5">5</button><button class="pin-btn" data-n="6">6</button>
+      <button class="pin-btn" data-n="7">7</button><button class="pin-btn" data-n="8">8</button><button class="pin-btn" data-n="9">9</button>
+      <button class="pin-btn pin-empty" disabled></button>
+      <button class="pin-btn" data-n="0">0</button>
+      <button class="pin-btn pin-del" id="setup-del"><i class="ti ti-backspace"></i></button>
+    </div>
+    <button class="pin-forgot" id="btn-skip-pin">Skip for now</button>
+  </div>
+</div>
+
+<!-- ═══════════════ PIN LOCK ═══════════════ -->
+<div class="screen" id="pin-lock" style="display:none">
+  <div class="pin-screen-content">
+    <img class="pin-logo" src="assets/logo.svg" alt="">
+    <h2 class="pin-title" id="lock-greeting">Welcome back</h2>
+    <p class="pin-subtitle" id="lock-msg">Enter your Artha PIN</p>
+    <div class="pin-dots" id="lock-dots">
+      <div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div>
+      <div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div>
+    </div>
+    <div class="pin-pad" id="lock-pad">
+      <button class="pin-btn" data-n="1">1</button><button class="pin-btn" data-n="2">2</button><button class="pin-btn" data-n="3">3</button>
+      <button class="pin-btn" data-n="4">4</button><button class="pin-btn" data-n="5">5</button><button class="pin-btn" data-n="6">6</button>
+      <button class="pin-btn" data-n="7">7</button><button class="pin-btn" data-n="8">8</button><button class="pin-btn" data-n="9">9</button>
+      <button class="pin-btn pin-empty" disabled></button>
+      <button class="pin-btn" data-n="0">0</button>
+      <button class="pin-btn pin-del" id="lock-del"><i class="ti ti-backspace"></i></button>
+    </div>
+    <button class="bio-btn hidden" id="btn-biometric"><i class="ti ti-fingerprint"></i> Use biometric</button>
+    <button class="pin-forgot" id="btn-lock-signout">Sign out</button>
+  </div>
+</div>
+
+<!-- ═══════════════ MAIN APP SHELL ═══════════════ -->
+<div id="app-shell" class="hidden">
+
+  <header id="app-header">
+    <div class="header-brand">
+      <img class="header-logo-svg" src="assets/logo.svg" alt="">
+      <span class="header-app-name">Artha</span>
+    </div>
+    <div class="header-actions">
+      <button class="icon-btn" id="btn-privacy" title="Hide amounts"><i class="ti ti-eye"></i></button>
+      <button class="icon-btn" id="btn-refresh" title="Refresh prices"><i class="ti ti-refresh"></i></button>
+      <div class="user-avatar" id="user-avatar" title="Account">U</div>
+    </div>
+  </header>
+
+  <!-- Live index ticker -->
+  <div id="index-ticker">
+    <div class="ticker-item">
+      <span class="ticker-name">NIFTY 50</span>
+      <span class="ticker-val mono" id="tk-nifty-val">–</span>
+      <span class="ticker-chg mono neutral" id="tk-nifty-chg">–</span>
+    </div>
+    <div class="ticker-sep"></div>
+    <div class="ticker-item">
+      <span class="ticker-name">SENSEX</span>
+      <span class="ticker-val mono" id="tk-sensex-val">–</span>
+      <span class="ticker-chg mono neutral" id="tk-sensex-chg">–</span>
+    </div>
+    <div class="ticker-sep"></div>
+    <div class="ticker-item">
+      <span class="ticker-name">BANK NIFTY</span>
+      <span class="ticker-val mono" id="tk-banknifty-val">–</span>
+      <span class="ticker-chg mono neutral" id="tk-banknifty-chg">–</span>
+    </div>
+  </div>
+
+  <div id="pages">
+
+    <!-- ── HOME ── -->
+    <div class="page" id="page-home">
+      <div class="page-top-space"></div>
+
+      <div class="portfolio-hero" id="portfolio-hero">
+        <div class="hero-sparkline-bg" id="hero-sparkline-bg"></div>
+        <div class="hero-top-row">
+          <div>
+            <p class="hero-label">Total Portfolio Value</p>
+            <h1 class="hero-value" id="total-value">₹0</h1>
+            <div class="hero-pnl">
+              <span class="pnl-badge neutral" id="total-pnl-badge"><i class="ti ti-minus"></i> ₹0 (0.00%)</span>
+            </div>
+          </div>
+          <div class="last-updated">
+            <span class="live-dot" id="live-dot"></span>
+            <span id="last-updated-text" style="font-size:10.5px;color:var(--t3);font-family:var(--font-mono);">–</span>
+          </div>
+        </div>
+        <div class="hero-stats">
+          <div class="hero-stat">
+            <div class="hero-stat-label">Invested</div>
+            <div class="hero-stat-val" id="stat-invested">₹0</div>
+          </div>
+          <div class="hero-divider"></div>
+          <div class="hero-stat">
+            <div class="hero-stat-label">Today's P&amp;L</div>
+            <div class="hero-stat-val" id="stat-today">₹0</div>
+          </div>
+          <div class="hero-divider"></div>
+          <div class="hero-stat">
+            <div class="hero-stat-label">Holdings</div>
+            <div class="hero-stat-val" id="stat-count">0</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="quick-chips">
+        <button class="quick-chip" id="chip-add"><i class="ti ti-plus"></i> Add stock</button>
+        <button class="quick-chip" id="chip-refresh"><i class="ti ti-refresh"></i> Refresh</button>
+        <button class="quick-chip" id="chip-inbox"><i class="ti ti-inbox"></i> Inbox</button>
+      </div>
+
+      <div class="section-hdr"><h3>Sector breakdown</h3></div>
+      <div class="surface-card">
+        <div class="sector-chart-wrap">
+          <div class="sector-donut-wrap">
+            <canvas id="sector-donut" width="104" height="104"></canvas>
+            <div class="sector-donut-center">
+              <div class="donut-center-num" id="sector-count">0</div>
+              <div class="donut-center-lbl">sectors</div>
+            </div>
+          </div>
+          <div class="sector-legend" id="sector-legend">
+            <div style="font-size:12.5px;color:var(--t3);">Add stocks to see breakdown</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-hdr" style="margin-top:4px;"><h3>Top performers</h3></div>
+      <div class="movers-grid" id="movers-grid">
+        <div style="grid-column:1/-1;padding:20px;text-align:center;color:var(--t3);font-size:13px;">No holdings yet</div>
+      </div>
+
+      <div style="height:96px;"></div>
+    </div>
+
+    <!-- ── PORTFOLIO (Stocks + Mutual Funds asset classes, each with Holdings/Analytics) ── -->
+    <div class="page" id="page-portfolio">
+      <div class="page-top-space"></div>
+
+      <!-- Asset class switcher (Groww-style: Stocks / Mutual Funds live inside one Portfolio tab) -->
+      <div class="asset-tabs" id="asset-tabs">
+        <button class="asset-tab active" data-asset="stocks"><i class="ti ti-chart-candle"></i> Stocks</button>
+        <button class="asset-tab" data-asset="mf"><i class="ti ti-building-bank"></i> Mutual Funds</button>
+      </div>
+
+      <!-- ═══ STOCKS ═══ -->
+      <div id="asset-stocks">
+        <div class="surface-card portfolio-summary-bar" id="port-summary-bar">
+          <div class="port-stat"><div class="port-stat-lbl">Current</div><div class="port-stat-val" id="port-current">₹0</div></div>
+          <div class="port-divider"></div>
+          <div class="port-stat"><div class="port-stat-lbl">Invested</div><div class="port-stat-val" id="port-invested">₹0</div></div>
+          <div class="port-divider"></div>
+          <div class="port-stat"><div class="port-stat-lbl">P&amp;L</div><div class="port-stat-val" id="port-pnl">₹0</div></div>
+        </div>
+
+        <div class="segmented" id="portfolio-segmented" style="position:relative;">
+          <div class="segmented-bg" id="segmented-bg" style="left:3px;width:calc(50% - 3px);"></div>
+          <div class="segmented-btn active" data-seg="holdings">Holdings</div>
+          <div class="segmented-btn" data-seg="analytics">Analytics</div>
+        </div>
+
+        <div id="seg-holdings">
+          <div class="filter-tabs" id="filter-tabs">
+            <button class="filter-tab active" data-sector="all">All</button>
+          </div>
+          <div class="sort-row" id="sort-row">
+            <span class="sort-row-label"><i class="ti ti-arrows-sort"></i> Sort</span>
+            <div class="sort-row-options" id="sort-options">
+              <button class="sort-opt active" data-sort="value">Value</button>
+              <button class="sort-opt" data-sort="pnl">P&amp;L</button>
+              <button class="sort-opt" data-sort="pnlpct">P&amp;L %</button>
+              <button class="sort-opt" data-sort="name">Name</button>
+            </div>
+          </div>
+          <div class="holdings-list" id="holdings-list"></div>
+          <div class="empty-state hidden" id="port-empty">
+            <div class="empty-icon"><i class="ti ti-chart-bubble"></i></div>
+            <div class="empty-title">No stocks yet</div>
+            <div class="empty-desc">Tap the + button below to add your first stock and start tracking.</div>
+          </div>
+        </div>
+
+        <div id="seg-analytics" class="hidden">
+          <div class="analytics-row" style="margin-bottom:12px;">
+            <div class="analytics-mini-card"><div class="analytics-mini-label">Total invested</div><div class="analytics-mini-val" id="an-invested">₹0</div></div>
+            <div class="analytics-mini-card"><div class="analytics-mini-label">Current value</div><div class="analytics-mini-val" id="an-current">₹0</div></div>
+            <div class="analytics-mini-card"><div class="analytics-mini-label">Total P&amp;L</div><div class="analytics-mini-val" id="an-pnl">₹0</div></div>
+            <div class="analytics-mini-card"><div class="analytics-mini-label">Annualised return</div><div class="analytics-mini-val" id="an-xirr">0%</div></div>
+          </div>
+          <div class="section-hdr"><h3>Sector allocation</h3></div>
+          <div class="surface-card" style="margin-bottom:12px;"><div class="analytics-chart-wrap"><canvas id="an-sector-chart" style="max-height:220px;"></canvas></div></div>
+          <div class="section-hdr"><h3>Best &amp; worst</h3></div>
+          <div class="analytics-row" style="margin-bottom:12px;">
+            <div class="analytics-mini-card"><div class="analytics-mini-label">Best performer</div><div class="analytics-mini-val" id="an-best-sym">–</div><div class="analytics-mini-sub gain" id="an-best-pct">–</div></div>
+            <div class="analytics-mini-card"><div class="analytics-mini-label">Worst performer</div><div class="analytics-mini-val" id="an-worst-sym">–</div><div class="analytics-mini-sub loss" id="an-worst-pct">–</div></div>
+          </div>
+          <div class="section-hdr"><h3>Holdings P&amp;L</h3></div>
+          <div class="surface-card" style="margin-bottom:12px;"><div class="analytics-chart-wrap"><canvas id="an-pnl-chart" style="max-height:240px;"></canvas></div></div>
+        </div>
+
+        <button class="fab" id="btn-add-stock"><i class="ti ti-plus"></i></button>
+      </div>
+
+      <!-- ═══ MUTUAL FUNDS ═══ -->
+      <div id="asset-mf" class="hidden">
+        <div class="surface-card portfolio-summary-bar" id="mf-summary-bar">
+          <div class="port-stat"><div class="port-stat-lbl">Current</div><div class="port-stat-val" id="mf-current">₹0</div></div>
+          <div class="port-divider"></div>
+          <div class="port-stat"><div class="port-stat-lbl">Invested</div><div class="port-stat-val" id="mf-invested">₹0</div></div>
+          <div class="port-divider"></div>
+          <div class="port-stat"><div class="port-stat-lbl">P&amp;L</div><div class="port-stat-val" id="mf-pnl">₹0</div></div>
+        </div>
+
+        <div class="segmented" id="mf-segmented" style="position:relative;">
+          <div class="segmented-bg" id="mf-segmented-bg" style="left:3px;width:calc(50% - 3px);"></div>
+          <div class="segmented-btn active" data-seg="holdings">Holdings</div>
+          <div class="segmented-btn" data-seg="analytics">Analytics</div>
+        </div>
+
+        <div id="mf-seg-holdings">
+          <div class="holdings-list" id="mf-holdings-list"></div>
+          <div class="empty-state hidden" id="mf-empty">
+            <div class="empty-icon"><i class="ti ti-building-bank"></i></div>
+            <div class="empty-title">No mutual funds yet</div>
+            <div class="empty-desc">Tap + to add a fund by name — NAV updates automatically from AMFI data.</div>
+          </div>
+        </div>
+
+        <div id="mf-seg-analytics" class="hidden">
+          <div class="analytics-row" style="margin-bottom:12px;">
+            <div class="analytics-mini-card"><div class="analytics-mini-label">Total invested</div><div class="analytics-mini-val" id="mfan-invested">₹0</div></div>
+            <div class="analytics-mini-card"><div class="analytics-mini-label">Current value</div><div class="analytics-mini-val" id="mfan-current">₹0</div></div>
+            <div class="analytics-mini-card"><div class="analytics-mini-label">Total P&amp;L</div><div class="analytics-mini-val" id="mfan-pnl">₹0</div></div>
+            <div class="analytics-mini-card"><div class="analytics-mini-label">Annualised return</div><div class="analytics-mini-val" id="mfan-xirr">0%</div></div>
+          </div>
+          <div class="section-hdr"><h3>Category allocation</h3></div>
+          <div class="surface-card" style="margin-bottom:12px;"><div class="analytics-chart-wrap"><canvas id="mfan-category-chart" style="max-height:220px;"></canvas></div></div>
+        </div>
+
+        <button class="fab" id="btn-add-mf"><i class="ti ti-plus"></i></button>
+      </div>
+
+      <div style="height:96px;"></div>
+    </div>
+
+    <!-- ── WATCHLIST ── -->
+    <div class="page" id="page-watchlist">
+      <div class="page-top-space"></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+        <h2 style="font-family:var(--font-display);font-size:19px;font-weight:700;">Watchlist</h2>
+        <button class="icon-btn" id="btn-add-watch" title="Add to watchlist"><i class="ti ti-plus"></i></button>
+      </div>
+      <div class="watch-list" id="watch-list"></div>
+      <div class="empty-state hidden" id="watch-empty">
+        <div class="empty-icon"><i class="ti ti-eye"></i></div>
+        <div class="empty-title">Nothing to watch yet</div>
+        <div class="empty-desc">Tap + to add stocks you want to monitor without owning.</div>
+      </div>
+      <div style="height:96px;"></div>
+    </div>
+
+    <!-- ── INBOX ── -->
+    <div class="page" id="page-inbox">
+      <div class="page-top-space"></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+        <h2 style="font-family:var(--font-display);font-size:19px;font-weight:700;">Inbox</h2>
+        <span class="section-link" id="btn-mark-read">Mark all read</span>
+      </div>
+      <p style="font-size:12.5px;color:var(--t2);margin-bottom:16px;line-height:1.6;">Results, board meetings and news for stocks in your portfolio and watchlist.</p>
+
+      <div class="inbox-filter-row" id="inbox-filter-row">
+        <button class="filter-tab active" data-filter="all">All</button>
+        <button class="filter-tab" data-filter="result">Results</button>
+        <button class="filter-tab" data-filter="board">Board meetings</button>
+        <button class="filter-tab" data-filter="dividend">Dividends</button>
+        <button class="filter-tab" data-filter="news">News</button>
+      </div>
+
+      <div class="inbox-list" id="inbox-list"></div>
+      <div class="empty-state hidden" id="inbox-empty">
+        <div class="empty-icon"><i class="ti ti-inbox"></i></div>
+        <div class="empty-title">Inbox is empty</div>
+        <div class="empty-desc">Add stocks to your portfolio or watchlist — updates will start showing up here.</div>
+      </div>
+      <div style="height:96px;"></div>
+    </div>
+
+    <!-- ── SETTINGS ── -->
+    <div class="page" id="page-settings">
+      <div class="page-top-space"></div>
+      <h2 style="font-family:var(--font-display);font-size:19px;font-weight:700;margin-bottom:20px;">Settings</h2>
+
+      <div class="settings-profile">
+        <div class="settings-avatar" id="settings-avatar">U</div>
+        <div>
+          <div class="settings-user-name" id="settings-name">Loading…</div>
+          <div class="settings-user-email" id="settings-email"></div>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-section-title">Security</div>
+        <div class="settings-group">
+          <div class="settings-row" id="row-change-pin">
+            <div class="settings-row-left">
+              <div class="settings-row-icon" style="background:var(--brand-dim);color:var(--brand-a);"><i class="ti ti-lock"></i></div>
+              <div><div class="settings-row-title">Change PIN</div><div class="settings-row-sub">Update your 6-digit lock PIN</div></div>
+            </div>
+            <div class="settings-row-right"><i class="ti ti-chevron-right"></i></div>
+          </div>
+          <div class="settings-row" id="row-biometric">
+            <div class="settings-row-left">
+              <div class="settings-row-icon" style="background:var(--gain-dim);color:var(--gain);"><i class="ti ti-fingerprint"></i></div>
+              <div><div class="settings-row-title">Biometric unlock</div><div class="settings-row-sub" id="bio-sub">Face ID / Fingerprint</div></div>
+            </div>
+            <div class="settings-row-right">
+              <label class="toggle-switch"><input type="checkbox" id="bio-toggle"><span class="toggle-slider"></span></label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-section-title">Preferences</div>
+        <div class="settings-group">
+          <div class="settings-row">
+            <div class="settings-row-left">
+              <div class="settings-row-icon" style="background:var(--gold-dim);color:var(--gold-lt);"><i class="ti ti-clock"></i></div>
+              <div><div class="settings-row-title">Price refresh rate</div><div class="settings-row-sub">During market hours</div></div>
+            </div>
+            <div class="settings-row-right">
+              <select id="refresh-interval" style="background:var(--surface-2);border:1px solid var(--border);color:var(--t2);padding:4px 8px;border-radius:var(--r-sm);font-size:12.5px;outline:none;">
+                <option value="10000">10s</option>
+                <option value="30000" selected>30s</option>
+                <option value="60000">1 min</option>
+              </select>
+            </div>
+          </div>
+          <div class="settings-row">
+            <div class="settings-row-left">
+              <div class="settings-row-icon" style="background:rgba(0,180,216,0.1);color:var(--brand-b);"><i class="ti ti-bell"></i></div>
+              <div><div class="settings-row-title">Inbox notifications</div><div class="settings-row-sub">Results, board meetings, news</div></div>
+            </div>
+            <div class="settings-row-right">
+              <label class="toggle-switch"><input type="checkbox" id="inbox-toggle" checked><span class="toggle-slider"></span></label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-section-title">Data</div>
+        <div class="settings-group">
+          <div class="settings-row" id="row-export">
+            <div class="settings-row-left">
+              <div class="settings-row-icon" style="background:rgba(139,92,246,0.13);color:var(--brand-c);"><i class="ti ti-file-spreadsheet"></i></div>
+              <div><div class="settings-row-title">Export to CSV</div><div class="settings-row-sub">Download your holdings data</div></div>
+            </div>
+            <div class="settings-row-right"><i class="ti ti-download"></i></div>
+          </div>
+          <div class="settings-row" id="row-sync">
+            <div class="settings-row-left">
+              <div class="settings-row-icon" style="background:var(--gain-dim);color:var(--gain);"><i class="ti ti-cloud"></i></div>
+              <div><div class="settings-row-title">Sync status</div><div class="settings-row-sub" id="sync-status">Synced</div></div>
+            </div>
+            <div class="settings-row-right" style="color:var(--gain);font-size:11.5px;">Live</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-section-title">About</div>
+        <div class="settings-group">
+          <div class="settings-row" id="row-github">
+            <div class="settings-row-left">
+              <div class="settings-row-icon" style="background:rgba(255,255,255,0.06);color:var(--t1);"><i class="ti ti-brand-github"></i></div>
+              <div><div class="settings-row-title">View on GitHub</div></div>
+            </div>
+            <div class="settings-row-right"><i class="ti ti-external-link"></i></div>
+          </div>
+          <div class="settings-row" id="row-signout">
+            <div class="settings-row-left">
+              <div class="settings-row-icon" style="background:var(--loss-dim);color:var(--loss);"><i class="ti ti-logout"></i></div>
+              <div><div class="settings-row-title" style="color:var(--loss);">Sign out</div></div>
+            </div>
+            <div class="settings-row-right"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-version">Artha v2.0.0 · Built with ♥</div>
+      <div style="height:96px;"></div>
+    </div>
+
+  </div><!-- /pages -->
+
+  <nav id="bottom-nav">
+    <button class="nav-btn active" data-page="home"><i class="ti ti-layout-dashboard"></i><span>Home</span></button>
+    <button class="nav-btn" data-page="portfolio"><i class="ti ti-briefcase"></i><span>Portfolio</span></button>
+    <button class="nav-btn" data-page="watchlist"><i class="ti ti-eye"></i><span>Watchlist</span></button>
+    <button class="nav-btn" data-page="inbox"><i class="ti ti-inbox"></i><span>Inbox</span><span class="nav-badge hidden" id="inbox-nav-badge"></span></button>
+    <button class="nav-btn" data-page="settings"><i class="ti ti-settings"></i><span>Settings</span></button>
+  </nav>
+
+</div><!-- /app-shell -->
+
+<!-- ═══════════════ ADD STOCK MODAL ═══════════════ -->
+<div class="modal-overlay" id="modal-add">
+  <div class="modal-sheet">
+    <div class="modal-drag"></div>
+    <div class="modal-header">
+      <span class="modal-title" id="add-modal-title">Add stock</span>
+      <button class="modal-close" id="btn-close-add"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-label">Stock symbol</div>
+      <div class="stock-search-wrap">
+        <input class="stock-search-input" type="text" id="stock-search" placeholder="Search NSE/BSE stocks…" autocomplete="off" autocapitalize="characters">
+        <i class="ti ti-search stock-search-icon"></i>
+        <div class="stock-suggestions" id="stock-suggestions"></div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-col">
+          <div class="form-label">Exchange</div>
+          <select class="form-select" id="add-exchange"><option value="NSE">NSE</option><option value="BSE">BSE</option></select>
+        </div>
+        <div class="form-col">
+          <div class="form-label">Sector</div>
+          <select class="form-select" id="add-sector">
+            <option value="Technology">Technology</option><option value="Finance">Finance</option><option value="Energy">Energy</option>
+            <option value="Auto">Auto</option><option value="Pharma">Pharma</option><option value="FMCG">FMCG</option>
+            <option value="Metals">Metals</option><option value="Telecom">Telecom</option><option value="Infrastructure">Infrastructure</option>
+            <option value="Healthcare">Healthcare</option><option value="Cement">Cement</option><option value="Chemicals">Chemicals</option>
+            <option value="Insurance">Insurance</option><option value="Utilities">Utilities</option><option value="Real Estate">Real Estate</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-col">
+          <div class="form-label">Buy price (₹)</div>
+          <input class="form-input" type="number" id="add-price" placeholder="0.00" step="0.01" min="0">
+        </div>
+        <div class="form-col">
+          <div class="form-label">Quantity</div>
+          <input class="form-input" type="number" id="add-qty" placeholder="0" step="1" min="1">
+        </div>
+      </div>
+
+      <div class="form-label">Buy date</div>
+      <input class="form-input" type="date" id="add-date" style="width:100%;margin-bottom:0;">
+
+      <div class="price-preview" id="price-preview">
+        <div class="price-preview-row"><span class="price-preview-label">Current price</span><span class="price-preview-val" id="preview-cmp">–</span></div>
+        <div class="price-preview-row"><span class="price-preview-label">Invested amount</span><span class="price-preview-val" id="preview-invested">–</span></div>
+        <div class="price-preview-row"><span class="price-preview-label">Estimated P&amp;L</span><span class="price-preview-val" id="preview-pnl">–</span></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-primary" id="btn-save-stock">Save stock</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ ADD MUTUAL FUND MODAL ═══════════════ -->
+<div class="modal-overlay" id="modal-add-mf">
+  <div class="modal-sheet">
+    <div class="modal-drag"></div>
+    <div class="modal-header">
+      <span class="modal-title" id="add-mf-modal-title">Add mutual fund</span>
+      <button class="modal-close" id="btn-close-add-mf"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-label">Fund name</div>
+      <div class="stock-search-wrap">
+        <input class="stock-search-input" type="text" id="mf-search" placeholder="Search mutual funds…" autocomplete="off">
+        <i class="ti ti-search stock-search-icon"></i>
+        <div class="stock-suggestions" id="mf-suggestions"></div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-col">
+          <div class="form-label">Units</div>
+          <input class="form-input" type="number" id="add-mf-units" placeholder="0.000" step="0.001" min="0">
+        </div>
+        <div class="form-col">
+          <div class="form-label">Buy NAV (₹)</div>
+          <input class="form-input" type="number" id="add-mf-nav" placeholder="0.00" step="0.01" min="0">
+        </div>
+      </div>
+
+      <div class="form-label">Investment date</div>
+      <input class="form-input" type="date" id="add-mf-date" style="width:100%;margin-bottom:0;">
+
+      <div class="price-preview" id="mf-price-preview">
+        <div class="price-preview-row"><span class="price-preview-label">Current NAV</span><span class="price-preview-val" id="mf-preview-nav">–</span></div>
+        <div class="price-preview-row"><span class="price-preview-label">Invested amount</span><span class="price-preview-val" id="mf-preview-invested">–</span></div>
+        <div class="price-preview-row"><span class="price-preview-label">Estimated P&amp;L</span><span class="price-preview-val" id="mf-preview-pnl">–</span></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-primary" id="btn-save-mf">Save fund</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ MUTUAL FUND DETAIL MODAL ═══════════════ -->
+<div class="modal-overlay" id="modal-mf-detail">
+  <div class="modal-sheet" style="max-height:92dvh;">
+    <div class="modal-drag"></div>
+    <div class="modal-header">
+      <span class="modal-title">Fund detail</span>
+      <button class="modal-close" id="btn-close-mf-detail"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="detail-stock-header">
+        <div class="detail-avatar" id="mfd-avatar"><i class="ti ti-building-bank"></i></div>
+        <div><div class="detail-sym" id="mfd-name" style="font-size:15px;line-height:1.4;">–</div><div class="detail-name" id="mfd-house">–</div></div>
+      </div>
+
+      <div class="detail-price-block">
+        <div class="detail-price" id="mfd-nav">₹–</div>
+        <div class="detail-change" id="mfd-change"><span id="mfd-change-amt">–</span><span id="mfd-change-pct">–</span></div>
+        <div style="font-size:11px;color:var(--t3);margin-top:4px;">NAV as of <span id="mfd-nav-date">–</span></div>
+      </div>
+
+      <div id="mf-chart-container" style="height:175px;margin-bottom:18px;border-radius:var(--r-sm);overflow:hidden;position:relative;"></div>
+
+      <div class="detail-stats-grid">
+        <div class="detail-stat"><div class="detail-stat-label">Units held</div><div class="detail-stat-val" id="mfd-units">–</div></div>
+        <div class="detail-stat"><div class="detail-stat-label">Avg buy NAV</div><div class="detail-stat-val" id="mfd-buy-nav">–</div></div>
+        <div class="detail-stat"><div class="detail-stat-label">Invested</div><div class="detail-stat-val" id="mfd-invested">–</div></div>
+        <div class="detail-stat"><div class="detail-stat-label">Current value</div><div class="detail-stat-val" id="mfd-current">–</div></div>
+        <div class="detail-stat"><div class="detail-stat-label">P&amp;L</div><div class="detail-stat-val" id="mfd-pnl">–</div></div>
+        <div class="detail-stat"><div class="detail-stat-label">Held for</div><div class="detail-stat-val" id="mfd-days">–</div></div>
+      </div>
+
+      <div class="detail-actions">
+        <button class="btn-edit" id="btn-edit-mf"><i class="ti ti-edit"></i> Edit position</button>
+        <button class="btn-delete" id="btn-delete-mf"><i class="ti ti-trash"></i> Remove</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ STOCK DETAIL MODAL ═══════════════ -->
+<div class="modal-overlay" id="modal-detail">
+  <div class="modal-sheet" style="max-height:95dvh;">
+    <div class="modal-drag"></div>
+    <div class="modal-header">
+      <span class="modal-title">Stock detail</span>
+      <button class="modal-close" id="btn-close-detail"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="detail-stock-header">
+        <div class="detail-avatar" id="d-avatar">R</div>
+        <div><div class="detail-sym" id="d-sym">–</div><div class="detail-name" id="d-name">–</div></div>
+        <div style="margin-left:auto;text-align:right;"><span id="d-sector-badge" class="sector-badge sec-default" style="font-size:10.5px;">–</span></div>
+      </div>
+
+      <div class="detail-price-block">
+        <div class="detail-price" id="d-price">₹–</div>
+        <div class="detail-change" id="d-change"><span id="d-change-amt">–</span><span id="d-change-pct">–</span></div>
+      </div>
+
+      <div class="chart-tabs">
+        <button class="chart-tab active" data-range="1d">1D</button>
+        <button class="chart-tab" data-range="5d">5D</button>
+        <button class="chart-tab" data-range="1mo">1M</button>
+        <button class="chart-tab" data-range="3mo">3M</button>
+        <button class="chart-tab" data-range="1y">1Y</button>
+      </div>
+      <div id="stock-chart-container"></div>
+
+      <div class="detail-stats-grid">
+        <div class="detail-stat"><div class="detail-stat-label">Avg buy price</div><div class="detail-stat-val" id="d-buy-price">–</div></div>
+        <div class="detail-stat"><div class="detail-stat-label">Quantity held</div><div class="detail-stat-val" id="d-qty">–</div></div>
+        <div class="detail-stat"><div class="detail-stat-label">Invested</div><div class="detail-stat-val" id="d-invested">–</div></div>
+        <div class="detail-stat"><div class="detail-stat-label">Current value</div><div class="detail-stat-val" id="d-current">–</div></div>
+        <div class="detail-stat"><div class="detail-stat-label">P&amp;L</div><div class="detail-stat-val" id="d-pnl">–</div></div>
+        <div class="detail-stat"><div class="detail-stat-label">Held for</div><div class="detail-stat-val" id="d-days">–</div></div>
+        <div class="detail-stat"><div class="detail-stat-label">52W high</div><div class="detail-stat-val" id="d-52hi">–</div></div>
+        <div class="detail-stat"><div class="detail-stat-label">52W low</div><div class="detail-stat-val" id="d-52lo">–</div></div>
+      </div>
+
+      <!-- Peter Lynch Valuation -->
+      <div class="detail-section-divider"><span>Peter Lynch Valuation</span></div>
+      <div id="lynch-container"><!-- populated by lynch.js --></div>
+
+      <div class="detail-actions" style="margin-top:20px;">
+        <button class="btn-edit" id="btn-edit-stock"><i class="ti ti-edit"></i> Edit position</button>
+        <button class="btn-delete" id="btn-delete-stock"><i class="ti ti-trash"></i> Remove</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ LYNCH INFO MODAL ═══════════════ -->
+<div class="modal-overlay" id="modal-lynch-info">
+  <div class="modal-sheet" style="max-height:80dvh;">
+    <div class="modal-drag"></div>
+    <div class="modal-header">
+      <span class="modal-title">How this works</span>
+      <button class="modal-close" id="btn-close-lynch-info"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="modal-body" style="font-size:13.5px;color:var(--t2);line-height:1.7;">
+      <p style="color:var(--t1);font-weight:600;margin-bottom:8px;font-family:var(--font-display);">Peter Lynch's Fair Value formula</p>
+      <p style="margin-bottom:14px;">From Peter Lynch's book <em>One Up On Wall Street</em> — a quick gut-check on whether a growth stock's price makes sense next to its growth.</p>
+      <div class="lynch-formula" style="margin-bottom:14px;">
+        <div style="text-align:center;font-family:var(--font-mono);font-size:13px;color:var(--t1);padding:6px 0;">
+          (EPS Growth % + Dividend Yield %) ÷ P/E Ratio
+        </div>
+      </div>
+      <p style="margin-bottom:10px;"><strong style="color:var(--loss);">Below 1.0</strong> — the stock's price has run ahead of its growth. Overvalued.</p>
+      <p style="margin-bottom:10px;"><strong style="color:var(--gold-lt);">1.0 to 1.5</strong> — price and growth are roughly in balance. Fairly valued.</p>
+      <p style="margin-bottom:14px;"><strong style="color:var(--gain);">Above 1.5</strong> — growth is outpacing what the price reflects. Undervalued.</p>
+      <p style="font-size:12px;color:var(--t3);">This is a quick screening tool, not investment advice — always look at the full picture before deciding.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ── ADD TO WATCHLIST MODAL ── -->
+<div class="modal-overlay" id="modal-watch-add">
+  <div class="modal-sheet" style="max-height:70dvh;">
+    <div class="modal-drag"></div>
+    <div class="modal-header">
+      <span class="modal-title">Add to watchlist</span>
+      <button class="modal-close" id="btn-close-watch-add"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-label">Stock symbol</div>
+      <div class="stock-search-wrap">
+        <input class="stock-search-input" type="text" id="watch-search" placeholder="Search stocks…" autocomplete="off" autocapitalize="characters">
+        <i class="ti ti-search stock-search-icon"></i>
+        <div class="stock-suggestions" id="watch-suggestions"></div>
+      </div>
+      <div class="form-label" style="margin-top:12px;">Exchange</div>
+      <select class="form-select" id="watch-exchange" style="width:100%;"><option value="NSE">NSE</option><option value="BSE">BSE</option></select>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-primary" id="btn-save-watch">Add to watchlist</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── INBOX ITEM DETAIL MODAL ── -->
+<div class="modal-overlay" id="modal-inbox-detail">
+  <div class="modal-sheet" style="max-height:75dvh;">
+    <div class="modal-drag"></div>
+    <div class="modal-header">
+      <span class="modal-title" id="ib-modal-sym">–</span>
+      <button class="modal-close" id="btn-close-inbox-detail"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="modal-body">
+      <span class="inbox-tag" id="ib-modal-tag">–</span>
+      <h3 style="font-family:var(--font-display);font-size:16px;font-weight:600;margin:12px 0 8px;" id="ib-modal-title">–</h3>
+      <p style="font-size:13.5px;color:var(--t2);line-height:1.7;" id="ib-modal-desc">–</p>
+      <p style="font-size:11.5px;color:var(--t3);margin-top:14px;" id="ib-modal-time">–</p>
+    </div>
+  </div>
+</div>
+
+<div id="toasts"></div>
+<div class="load-overlay" id="load-overlay"><div class="load-spinner"></div></div>
+
+</div><!-- /app -->
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="https://unpkg.com/lightweight-charts@4.1.1/dist/lightweight-charts.standalone.production.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+<script src="js/config.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/stock-api.js"></script>
+<script src="js/mf-api.js"></script>
+<script src="js/lynch.js"></script>
+<script src="js/charts.js"></script>
+<script src="js/portfolio.js"></script>
+<script src="js/mutualfunds.js"></script>
+<script src="js/watchlist.js"></script>
+<script src="js/inbox.js"></script>
+<script src="js/app.js"></script>
+
+</body>
+</html>

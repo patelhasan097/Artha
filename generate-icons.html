@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Artha — Icon Generator</title>
+<style>
+  body { font-family: system-ui, sans-serif; background: #05070d; color: #e8eef7; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; gap: 20px; padding: 40px 20px; }
+  h1 { font-size: 22px; }
+  p { color: #8b93a7; font-size: 14px; text-align: center; max-width: 380px; line-height: 1.6; }
+  .row { display: flex; gap: 16px; }
+  button { padding: 14px 26px; background: linear-gradient(135deg,#00e0b8,#00b4d8); color: #05070d; border: none; border-radius: 12px; font-size: 14px; font-weight: 700; cursor: pointer; }
+  button.alt { background: linear-gradient(135deg,#8b5cf6,#00b4d8); }
+  button:hover { opacity: 0.92; }
+  #log { font-size: 12px; color: #34d399; text-align: center; white-space: pre-line; max-width: 320px; }
+  .previews { display: flex; gap: 14px; align-items: center; }
+  canvas { border-radius: 20px; background: #0d1220; }
+  .lbl { font-size: 11px; color: #6b7280; text-align: center; margin-top: 6px; }
+</style>
+</head>
+<body>
+  <h1>🎨 Artha Icon Generator</h1>
+  <p>Ek click mein saari PWA icon sizes generate + download ho jayengi — regular + maskable safe-zone dono. Sab files ko <code>assets/icons/</code> folder mein daal dena.</p>
+
+  <div class="previews">
+    <div><canvas id="prevRegular" width="180" height="180"></canvas><div class="lbl">Regular</div></div>
+    <div><canvas id="prevMaskable" width="180" height="180"></canvas><div class="lbl">Maskable (safe-zone)</div></div>
+  </div>
+
+  <div class="row">
+    <button onclick="generateAll()">⬇ Generate & Download All</button>
+  </div>
+  <div id="log"></div>
+
+<script>
+const SVG_STR = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+  <defs>
+    <linearGradient id="markGrad" x1="24" y1="76" x2="76" y2="18" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#00e0b8"/><stop offset="50%" stop-color="#00b4d8"/><stop offset="100%" stop-color="#8b5cf6"/>
+    </linearGradient>
+    <linearGradient id="goldDot" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#ffd166"/><stop offset="100%" stop-color="#f4a825"/>
+    </linearGradient>
+  </defs>
+  <path d="M50 20 L74 72 L62 72 L57.5 61 L42.5 61 L38 72 L26 72 Z" fill="none" stroke="url(#markGrad)" stroke-width="5.5" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M44 58 L50 45 L56 58" fill="none" stroke="url(#markGrad)" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="50" cy="20" r="5" fill="url(#goldDot)"/>
+</svg>`;
+
+const REGULAR_SIZES  = [72, 96, 128, 144, 152, 192, 384, 512];
+const MASKABLE_SIZES = [192, 512];
+
+function roundedRectPath(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r);
+  ctx.closePath();
+}
+
+function drawBg(ctx, size, rounded) {
+  const grad = ctx.createLinearGradient(0, 0, size, size);
+  grad.addColorStop(0, '#0d1220');
+  grad.addColorStop(1, '#05070d');
+  ctx.fillStyle = grad;
+  if (rounded) {
+    roundedRectPath(ctx, 0, 0, size, size, size * 0.22);
+    ctx.fill();
+  } else {
+    ctx.fillRect(0, 0, size, size);
+  }
+}
+
+function loadSvgImage() {
+  return new Promise((resolve) => {
+    const blob = new Blob([SVG_STR], { type: 'image/svg+xml;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const img = new Image();
+    img.onload = () => { resolve(img); URL.revokeObjectURL(url); };
+    img.src = url;
+  });
+}
+
+async function drawRegular(canvas, size) {
+  canvas.width = size; canvas.height = size;
+  const ctx = canvas.getContext('2d');
+  drawBg(ctx, size, true);
+  const img = await loadSvgImage();
+  const pad = size * 0.14;
+  ctx.drawImage(img, pad, pad, size - pad * 2, size - pad * 2);
+  return canvas.toDataURL('image/png');
+}
+
+async function drawMaskable(canvas, size) {
+  // Maskable icons get cropped into a circle/squircle by the OS — keep all content
+  // inside the inner ~66% "safe zone" so nothing important gets clipped.
+  canvas.width = size; canvas.height = size;
+  const ctx = canvas.getContext('2d');
+  drawBg(ctx, size, false); // full-bleed background, no rounding (OS masks it)
+  const img = await loadSvgImage();
+  const pad = size * 0.24; // larger padding = safe zone
+  ctx.drawImage(img, pad, pad, size - pad * 2, size - pad * 2);
+  return canvas.toDataURL('image/png');
+}
+
+async function download(dataUrl, filename) {
+  const a = document.createElement('a');
+  a.href = dataUrl; a.download = filename;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  await new Promise((r) => setTimeout(r, 250));
+}
+
+async function generateAll() {
+  const log = document.getElementById('log');
+  log.textContent = 'Generating…';
+  let count = 0;
+  const total = REGULAR_SIZES.length + MASKABLE_SIZES.length;
+
+  for (const size of REGULAR_SIZES) {
+    const c = document.createElement('canvas');
+    const data = await drawRegular(c, size);
+    await download(data, `icon-${size}.png`);
+    count++;
+    log.textContent = `${count}/${total} done — icon-${size}.png ✓`;
+  }
+  for (const size of MASKABLE_SIZES) {
+    const c = document.createElement('canvas');
+    const data = await drawMaskable(c, size);
+    await download(data, `icon-maskable-${size}.png`);
+    count++;
+    log.textContent = `${count}/${total} done — icon-maskable-${size}.png ✓`;
+  }
+  log.textContent = `✅ All ${total} icons downloaded!\nMove them into assets/icons/ folder.`;
+}
+
+window.onload = async () => {
+  await drawRegular(document.getElementById('prevRegular'), 180);
+  await drawMaskable(document.getElementById('prevMaskable'), 180);
+};
+</script>
+</body>
+</html>
