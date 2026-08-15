@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0">
-  <meta name="theme-color" content="#05070d">
+  <meta name="theme-color" content="#0B0A09">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Artha">
@@ -13,7 +13,7 @@
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
   <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
   <link rel="stylesheet" href="css/style.css">
 </head>
@@ -183,68 +183,62 @@
 
   <div id="pages">
 
-    <!-- ── HOME ── -->
+    <!-- ── HOME — Bento grid. See DESIGN.md for why. All element IDs below are
+         unchanged from before, so no JS files needed to change for this. ── -->
     <div class="page" id="page-home">
       <div class="page-top-space"></div>
 
-      <div class="portfolio-hero" id="portfolio-hero">
-        <div class="hero-sparkline-bg" id="hero-sparkline-bg"></div>
-        <div class="hero-top-row">
-          <div>
-            <p class="hero-label">Total Portfolio Value</p>
-            <h1 class="hero-value" id="total-value">₹0</h1>
-            <div class="hero-pnl">
-              <span class="pnl-badge neutral" id="total-pnl-badge"><i class="ti ti-minus"></i> ₹0 (0.00%)</span>
+      <div class="bento-grid">
+
+        <!-- Hero tile -->
+        <div class="bento-tile bento-hero" id="portfolio-hero">
+          <div class="hero-sparkline-bg" id="hero-sparkline-bg"></div>
+          <div class="bento-hero-top">
+            <span class="bento-label">Portfolio Value</span>
+            <div class="last-updated">
+              <span class="live-dot" id="live-dot"></span>
+              <span id="last-updated-text" style="font-size:10px;color:var(--t3);font-family:var(--font-mono);">–</span>
             </div>
           </div>
-          <div class="last-updated">
-            <span class="live-dot" id="live-dot"></span>
-            <span id="last-updated-text" style="font-size:10.5px;color:var(--t3);font-family:var(--font-mono);">–</span>
+          <h1 class="bento-hero-value" id="total-value">₹0</h1>
+          <div class="bento-hero-pnl">
+            <span class="pnl-badge neutral" id="total-pnl-badge"><i class="ti ti-minus"></i> ₹0 (0.00%)</span>
+          </div>
+          <div class="bento-hero-stats">
+            <div><span class="bento-mini-label">Invested</span><span class="bento-mini-val" id="stat-invested">₹0</span></div>
+            <div><span class="bento-mini-label">Today</span><span class="bento-mini-val" id="stat-today">₹0</span></div>
+            <div><span class="bento-mini-label">Holdings</span><span class="bento-mini-val" id="stat-count">0</span></div>
           </div>
         </div>
-        <div class="hero-stats">
-          <div class="hero-stat">
-            <div class="hero-stat-label">Invested</div>
-            <div class="hero-stat-val" id="stat-invested">₹0</div>
-          </div>
-          <div class="hero-divider"></div>
-          <div class="hero-stat">
-            <div class="hero-stat-label">Today's P&amp;L</div>
-            <div class="hero-stat-val" id="stat-today">₹0</div>
-          </div>
-          <div class="hero-divider"></div>
-          <div class="hero-stat">
-            <div class="hero-stat-label">Holdings</div>
-            <div class="hero-stat-val" id="stat-count">0</div>
-          </div>
-        </div>
-      </div>
 
-      <div class="quick-chips">
-        <button class="quick-chip" id="chip-add"><i class="ti ti-plus"></i> Add stock</button>
-        <button class="quick-chip" id="chip-refresh"><i class="ti ti-refresh"></i> Refresh</button>
-        <button class="quick-chip" id="chip-inbox"><i class="ti ti-inbox"></i> Inbox</button>
-      </div>
-
-      <div class="section-hdr"><h3>Sector breakdown</h3></div>
-      <div class="surface-card">
-        <div class="sector-chart-wrap">
+        <!-- Sector tile -->
+        <div class="bento-tile bento-sector">
+          <span class="bento-label">Sectors</span>
           <div class="sector-donut-wrap">
-            <canvas id="sector-donut" width="104" height="104"></canvas>
-            <div class="sector-donut-center">
-              <div class="donut-center-num" id="sector-count">0</div>
-              <div class="donut-center-lbl">sectors</div>
-            </div>
+            <canvas id="sector-donut" width="84" height="84"></canvas>
+            <div class="sector-donut-center"><div class="donut-center-num" id="sector-count">0</div></div>
           </div>
           <div class="sector-legend" id="sector-legend">
-            <div style="font-size:12.5px;color:var(--t3);">Add stocks to see breakdown</div>
+            <div style="font-size:11px;color:var(--t3);">Add stocks to see breakdown</div>
           </div>
         </div>
-      </div>
 
-      <div class="section-hdr" style="margin-top:4px;"><h3>Top performers</h3></div>
-      <div class="movers-grid" id="movers-grid">
-        <div style="grid-column:1/-1;padding:20px;text-align:center;color:var(--t3);font-size:13px;">No holdings yet</div>
+        <!-- Quick actions tile -->
+        <div class="bento-tile bento-actions">
+          <span class="bento-label" style="margin-bottom:4px;">Quick actions</span>
+          <button class="bento-action-btn" id="chip-add"><i class="ti ti-plus"></i> Add stock</button>
+          <button class="bento-action-btn" id="chip-refresh"><i class="ti ti-refresh"></i> Refresh prices</button>
+          <button class="bento-action-btn" id="chip-inbox"><i class="ti ti-inbox"></i> Open inbox</button>
+        </div>
+
+        <!-- Movers tile -->
+        <div class="bento-tile bento-movers">
+          <span class="bento-label">Top performers</span>
+          <div class="movers-grid" id="movers-grid">
+            <div style="grid-column:1/-1;padding:16px 0;text-align:center;color:var(--t3);font-size:12.5px;">No holdings yet</div>
+          </div>
+        </div>
+
       </div>
 
       <div style="height:96px;"></div>

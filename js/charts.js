@@ -36,7 +36,7 @@ const Charts = {
       data: { labels: data.map(d => d.sector), datasets: [{ data: data.map(d => d.pct), backgroundColor: data.map(d => Utils.sectorColor(d.sector)), borderWidth: 0, hoverOffset: 6 }] },
       options: {
         responsive: false, cutout: '74%', animation: { duration: 500, easing: 'easeOutQuart' },
-        plugins: { legend: { display: false }, tooltip: { backgroundColor: 'rgba(12,17,25,0.95)', borderColor: 'rgba(255,255,255,0.1)', borderWidth: 1, callbacks: { label: c => `  ${c.label}: ${c.parsed.toFixed(1)}%` } } },
+        plugins: { legend: { display: false }, tooltip: { backgroundColor: 'rgba(22,19,15,0.96)', borderColor: 'rgba(255,250,240,0.1)', borderWidth: 1, callbacks: { label: c => `  ${c.label}: ${c.parsed.toFixed(1)}%` } } },
       },
     });
 
@@ -67,8 +67,8 @@ const Charts = {
       options: {
         responsive: true, cutout: '60%',
         plugins: {
-          legend: { display: true, position: 'right', labels: { color: '#96a0b8', font: { size: 11, family: 'Inter' }, boxWidth: 10, padding: 12 } },
-          tooltip: { backgroundColor: 'rgba(12,17,25,0.95)', borderColor: 'rgba(255,255,255,0.1)', borderWidth: 1, callbacks: { label: c => `  ${c.label}: ${c.parsed.toFixed(1)}%` } },
+          legend: { display: true, position: 'right', labels: { color: '#A39C90', font: { size: 11, family: 'Inter' }, boxWidth: 10, padding: 12 } },
+          tooltip: { backgroundColor: 'rgba(22,19,15,0.96)', borderColor: 'rgba(255,250,240,0.1)', borderWidth: 1, callbacks: { label: c => `  ${c.label}: ${c.parsed.toFixed(1)}%` } },
         },
       },
     });
@@ -84,13 +84,13 @@ const Charts = {
 
     this._anPnlChart = new Chart(ctx, {
       type: 'bar',
-      data: { labels: items.map(i => i.sym), datasets: [{ data: items.map(i => i.pnl), backgroundColor: items.map(i => i.pnl >= 0 ? 'rgba(0,214,143,0.65)' : 'rgba(255,84,112,0.65)'), borderRadius: 5, borderSkipped: false }] },
+      data: { labels: items.map(i => i.sym), datasets: [{ data: items.map(i => i.pnl), backgroundColor: items.map(i => i.pnl >= 0 ? 'rgba(62,214,140,0.65)' : 'rgba(240,82,93,0.65)'), borderRadius: 5, borderSkipped: false }] },
       options: {
         responsive: true, indexAxis: 'y',
-        plugins: { legend: { display: false }, tooltip: { backgroundColor: 'rgba(12,17,25,0.95)', borderColor: 'rgba(255,255,255,0.1)', borderWidth: 1, callbacks: { label: c => `  ${Utils.fmtCurrencyFull(c.parsed.x)}` } } },
+        plugins: { legend: { display: false }, tooltip: { backgroundColor: 'rgba(22,19,15,0.96)', borderColor: 'rgba(255,250,240,0.1)', borderWidth: 1, callbacks: { label: c => `  ${Utils.fmtCurrencyFull(c.parsed.x)}` } } },
         scales: {
-          x: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#96a0b8', font: { size: 10 }, callback: v => Utils.fmtCurrency(v) } },
-          y: { grid: { display: false }, ticks: { color: '#eef2f9', font: { size: 11, family: 'JetBrains Mono' } } },
+          x: { grid: { color: 'rgba(255,250,240,0.04)' }, ticks: { color: '#A39C90', font: { size: 10 }, callback: v => Utils.fmtCurrency(v) } },
+          y: { grid: { display: false }, ticks: { color: '#F4F0E8', font: { size: 11, family: 'JetBrains Mono' } } },
         },
       },
     });
@@ -114,15 +114,15 @@ const Charts = {
     try {
       this._stockChart = LightweightCharts.createChart(container, {
         width: container.clientWidth || 320, height: 175,
-        layout: { background: { color: 'transparent' }, textColor: '#96a0b8', fontFamily: 'JetBrains Mono, monospace' },
-        grid: { vertLines: { color: 'rgba(255,255,255,0.04)' }, horzLines: { color: 'rgba(255,255,255,0.04)' } },
+        layout: { background: { color: 'transparent' }, textColor: '#A39C90', fontFamily: 'JetBrains Mono, monospace' },
+        grid: { vertLines: { color: 'rgba(255,250,240,0.04)' }, horzLines: { color: 'rgba(255,250,240,0.04)' } },
         crosshair: { mode: LightweightCharts.CrosshairMode.Normal },
-        rightPriceScale: { borderColor: 'rgba(255,255,255,0.08)' },
-        timeScale: { borderColor: 'rgba(255,255,255,0.08)', timeVisible: true, secondsVisible: false },
+        rightPriceScale: { borderColor: 'rgba(255,250,240,0.08)' },
+        timeScale: { borderColor: 'rgba(255,250,240,0.08)', timeVisible: true, secondsVisible: false },
         handleScroll: { mouseWheel: false }, handleScale: { mouseWheel: false },
       });
       this._stockSeries = this._stockChart.addAreaSeries({
-        lineColor: '#00e0b8', topColor: 'rgba(0,224,184,0.18)', bottomColor: 'rgba(0,224,184,0.0)',
+        lineColor: '#3ED68C', topColor: 'rgba(62,214,140,0.18)', bottomColor: 'rgba(62,214,140,0.0)',
         lineWidth: 2, crosshairMarkerVisible: true, crosshairMarkerRadius: 4,
         priceFormat: { type: 'price', precision: 2, minMove: 0.01 },
       });
@@ -179,8 +179,8 @@ const Charts = {
 
       const isUp = data[data.length - 1].value >= data[0].value;
       this._stockSeries.applyOptions({
-        lineColor: isUp ? '#00e0b8' : '#ff5470',
-        topColor: isUp ? 'rgba(0,224,184,0.18)' : 'rgba(255,84,112,0.15)',
+        lineColor: isUp ? '#3ED68C' : '#F0525D',
+        topColor: isUp ? 'rgba(62,214,140,0.18)' : 'rgba(240,82,93,0.15)',
         bottomColor: 'rgba(0,0,0,0)',
       });
       this._stockSeries.setData(data);
@@ -201,7 +201,7 @@ const Charts = {
       const step = (p.price - prev) / 7;
       const pts = Array.from({ length: 8 }, (_, i) => prev + step * i + (Math.random() - 0.5) * step * 0.3);
       pts[pts.length - 1] = p.price;
-      el.innerHTML = Utils.sparkline(pts, p.changePct >= 0 ? '#00d68f' : '#ff5470', 56, 26);
+      el.innerHTML = Utils.sparkline(pts, p.changePct >= 0 ? '#3ED68C' : '#F0525D', 56, 26);
     });
   },
 
@@ -219,15 +219,15 @@ const Charts = {
     try {
       this._mfChart = LightweightCharts.createChart(container, {
         width: container.clientWidth || 320, height: 175,
-        layout: { background: { color: 'transparent' }, textColor: '#96a0b8', fontFamily: 'JetBrains Mono, monospace' },
-        grid: { vertLines: { color: 'rgba(255,255,255,0.04)' }, horzLines: { color: 'rgba(255,255,255,0.04)' } },
+        layout: { background: { color: 'transparent' }, textColor: '#A39C90', fontFamily: 'JetBrains Mono, monospace' },
+        grid: { vertLines: { color: 'rgba(255,250,240,0.04)' }, horzLines: { color: 'rgba(255,250,240,0.04)' } },
         crosshair: { mode: LightweightCharts.CrosshairMode.Normal },
-        rightPriceScale: { borderColor: 'rgba(255,255,255,0.08)' },
-        timeScale: { borderColor: 'rgba(255,255,255,0.08)', timeVisible: false, secondsVisible: false },
+        rightPriceScale: { borderColor: 'rgba(255,250,240,0.08)' },
+        timeScale: { borderColor: 'rgba(255,250,240,0.08)', timeVisible: false, secondsVisible: false },
         handleScroll: { mouseWheel: false }, handleScale: { mouseWheel: false },
       });
       this._mfSeries = this._mfChart.addAreaSeries({
-        lineColor: '#00e0b8', topColor: 'rgba(0,224,184,0.18)', bottomColor: 'rgba(0,224,184,0.0)',
+        lineColor: '#3ED68C', topColor: 'rgba(62,214,140,0.18)', bottomColor: 'rgba(62,214,140,0.0)',
         lineWidth: 2, crosshairMarkerVisible: true, crosshairMarkerRadius: 4,
         priceFormat: { type: 'price', precision: 2, minMove: 0.01 },
       });
@@ -264,8 +264,8 @@ const Charts = {
 
       const isUp = data[data.length - 1].value >= data[0].value;
       this._mfSeries.applyOptions({
-        lineColor: isUp ? '#00e0b8' : '#ff5470',
-        topColor: isUp ? 'rgba(0,224,184,0.18)' : 'rgba(255,84,112,0.15)',
+        lineColor: isUp ? '#3ED68C' : '#F0525D',
+        topColor: isUp ? 'rgba(62,214,140,0.18)' : 'rgba(240,82,93,0.15)',
         bottomColor: 'rgba(0,0,0,0)',
       });
       this._mfSeries.setData(data);
@@ -292,8 +292,8 @@ const Charts = {
       options: {
         responsive: true, cutout: '60%',
         plugins: {
-          legend: { display: true, position: 'right', labels: { color: '#96a0b8', font: { size: 11, family: 'Inter' }, boxWidth: 10, padding: 12 } },
-          tooltip: { backgroundColor: 'rgba(12,17,25,0.95)', borderColor: 'rgba(255,255,255,0.1)', borderWidth: 1, callbacks: { label: c => `  ${c.label}: ${c.parsed.toFixed(1)}%` } },
+          legend: { display: true, position: 'right', labels: { color: '#A39C90', font: { size: 11, family: 'Inter' }, boxWidth: 10, padding: 12 } },
+          tooltip: { backgroundColor: 'rgba(22,19,15,0.96)', borderColor: 'rgba(255,250,240,0.1)', borderWidth: 1, callbacks: { label: c => `  ${c.label}: ${c.parsed.toFixed(1)}%` } },
         },
       },
     });

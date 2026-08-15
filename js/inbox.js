@@ -107,7 +107,8 @@ const Inbox = {
     if (filtered.length === 0) {
       list.innerHTML = '';
       empty?.classList.remove('hidden');
-      Utils.el('empty-title') && (Utils.el('empty-title').textContent = this._watchedSymbols.length === 0 ? 'Inbox is empty' : 'No updates yet');
+      const emptyTitleEl = Utils.el('inbox-empty')?.querySelector('.empty-title');
+      if (emptyTitleEl) emptyTitleEl.textContent = this._watchedSymbols.length === 0 ? 'Inbox is empty' : 'No updates yet';
       return;
     }
     empty?.classList.add('hidden');

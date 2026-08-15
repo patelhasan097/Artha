@@ -490,9 +490,9 @@ const App = {
 
 document.addEventListener('DOMContentLoaded', () => {
   if (typeof Chart !== 'undefined') {
-    Chart.defaults.color = '#96a0b8';
+    Chart.defaults.color = '#A39C90';
     Chart.defaults.font.family = 'Inter, sans-serif';
-    Chart.defaults.borderColor = 'rgba(255,255,255,0.06)';
+    Chart.defaults.borderColor = 'rgba(255,250,240,0.06)';
     Chart.defaults.plugins.tooltip.enabled = true;
   }
   App.init();

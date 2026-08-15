@@ -111,7 +111,7 @@ const Utils = {
       const y = h - pad - ((v - min) / range) * (h - pad * 2);
       return `${x.toFixed(1)},${y.toFixed(1)}`;
     }).join(' ');
-    const trend = color || (vals[vals.length - 1] >= vals[0] ? '#00d68f' : '#ff5470');
+    const trend = color || (vals[vals.length - 1] >= vals[0] ? '#3ED68C' : '#F0525D');
     return `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}"><polyline points="${pts}" fill="none" stroke="${trend}" stroke-width="${strokeWidth}" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
   },
 
@@ -129,15 +129,15 @@ const Utils = {
     });
     const line = pts.map((p, i) => (i === 0 ? 'M' : 'L') + p[0].toFixed(1) + ',' + p[1].toFixed(1)).join(' ');
     const area = line + ` L${w},${h} L0,${h} Z`;
-    const color = isUp ? '#00d68f' : '#ff5470';
+    const color = isUp ? '#3ED68C' : '#F0525D';
     const gradId = 'heroGrad' + (isUp ? 'Up' : 'Down');
     return `<svg width="100%" height="100%" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none">
       <defs><linearGradient id="${gradId}" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stop-color="${color}" stop-opacity="0.25"/>
+        <stop offset="0%" stop-color="${color}" stop-opacity="0.2"/>
         <stop offset="100%" stop-color="${color}" stop-opacity="0"/>
       </linearGradient></defs>
       <path d="${area}" fill="url(#${gradId})"/>
-      <path d="${line}" fill="none" stroke="${color}" stroke-width="1.5" stroke-opacity="0.55"/>
+      <path d="${line}" fill="none" stroke="${color}" stroke-width="1.3" stroke-opacity="0.5"/>
     </svg>`;
   },
 
@@ -146,9 +146,16 @@ const Utils = {
     return map[sector] || 'sec-default';
   },
 
+  // Muted earth-tone categorical palette — considered and harmonious rather
+  // than saturated primaries, so a 10-slice donut still reads as one product.
   sectorColor(sector) {
-    const map = { 'Technology':'#38c6e8','Finance':'#00e0b8','Energy':'#f4a825','Auto':'#a78bfa','Pharma':'#00d68f','FMCG':'#f472b6','Metals':'#94a3b8','Telecom':'#818cf8','Infrastructure':'#fb923c','Healthcare':'#14b8a6','Cement':'#a8a29e','Chemicals':'#c084fc','Insurance':'#34d399','Utilities':'#22d3ee','Real Estate':'#fb7185','Other':'#6b7280' };
-    return map[sector] || '#6b7280';
+    const map = {
+      'Technology':'#9BADCF','Finance':'#E3A63E','Energy':'#E29679','Auto':'#B6A2BE',
+      'Pharma':'#9EC2AC','FMCG':'#DAAABC','Metals':'#ABA49B','Telecom':'#8FA6B0',
+      'Infrastructure':'#C2985F','Healthcare':'#8FBBA3','Cement':'#B0A797','Chemicals':'#A897B8',
+      'Insurance':'#7FA8A0','Utilities':'#C4A46E','Real Estate':'#C08B76','Other':'#675F53',
+    };
+    return map[sector] || '#675F53';
   },
 
   initials(symbol) { return (symbol || '?').slice(0, 2).toUpperCase(); },

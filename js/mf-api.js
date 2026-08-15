@@ -60,7 +60,7 @@ const MfAPI = {
   },
 
   categoryColor(group) {
-    const map = { 'Equity': '#00e0b8', 'Debt': '#38c6e8', 'Hybrid': '#a78bfa', 'Index / ETF': '#4ade80', 'Solution Oriented': '#f4a825', 'Other': '#6b7280' };
-    return map[group] || '#6b7280';
+    const map = { 'Equity': '#E3A63E', 'Debt': '#9BADCF', 'Hybrid': '#B6A2BE', 'Index / ETF': '#9EC2AC', 'Solution Oriented': '#C2985F', 'Other': '#675F53' };
+    return map[group] || '#675F53';
   },
 };
