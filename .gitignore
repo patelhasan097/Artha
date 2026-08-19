@@ -1,8 +1,0 @@
-# Real secrets — never commit this. GitHub Actions generates it at deploy
-# time from repo Secrets. For local testing, copy config.example.js to
-# config.js and fill in your own values (it'll stay untracked).
-js/config.js
-
-.DS_Store
-*.log
-node_modules/
